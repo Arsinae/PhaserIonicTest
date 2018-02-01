@@ -55,22 +55,62 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var HomePage = (function () {
-    /**
-     * Creates an instance of HomePage.
-     * @param {NavController} navCtrl
-     * @memberof HomePage
-     */
-    function HomePage(navCtrl) {
+    function HomePage(navCtrl, platform) {
+        var _this = this;
         this.navCtrl = navCtrl;
-        this.gameInstance = new __WEBPACK_IMPORTED_MODULE_2__game_game__["a" /* Game */]();
+        this.platform = platform;
+        this.platform.ready().then(function () {
+            var self = _this;
+            _this.gameInstance = new __WEBPACK_IMPORTED_MODULE_2__game_game__["a" /* Game */](_this.platform.width(), _this.platform.height() - 50);
+            _this.sizeScreen = { x: _this.platform.width(), y: _this.platform.height() };
+            _this.gameInstance.state.add('GameStart', {
+                preload: _this.preload,
+                create: _this.create,
+                update: _this.update
+            });
+            _this.gameInstance.state.start('GameStart');
+        });
     }
+    HomePage.prototype.preload = function (parent) {
+        // Preload the image
+        this.game.load.image('logo', 'assets/imgs/logo.png');
+        this.game.load.image('button', 'assets/imgs/button.jpeg');
+    };
+    HomePage.prototype.create = function () {
+        // Put the logo in the middle of screen at half size
+        //Create the sprite at the center of the screen
+        //Putting this for the variable will keep it accessible for the entire game
+        this.logo = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
+        //reduce to half size the sprite
+        this.logo.scale.setTo(0.5);
+        //set the anchor poitnto the middle of the sprite
+        this.logo.anchor.setTo(0.5);
+        // To flip an image you can use scale.setTo with negative value
+        // this.logo.scale.setTo(-1, 1) will flip the sprite horizontaly
+        //Add a button
+        this.button = this.game.add.button(this.game.world.centerX, this.game.world.height, 'button', function buttonOnClick() { console.log(this); }, this, 1, 1, 0);
+        this.button.scale.setTo(0.5);
+        this.button.anchor.setTo(0.5, 1);
+        //Function for the button state
+        //this.button.onInputOver.add(this.over, this);
+        //this.button.onInputOut.add(this.out, this);
+        //this.button.onInputUp.add(this.up, this);
+    };
+    HomePage.prototype.update = function () {
+        // Rotate a sprite
+        this.logo.angle += 0.5;
+    };
+    HomePage.prototype.over = function () {
+        console.log(this);
+    };
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'page-home',template:/*ion-inline-start:"/home/huber_t/Projet/Ionic/PhaserIonicTest/src/pages/home/home.html"*/'\n<ion-content>\n  <div id="game"></div>\n</ion-content>\n'/*ion-inline-end:"/home/huber_t/Projet/Ionic/PhaserIonicTest/src/pages/home/home.html"*/
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* Platform */]) === "function" && _b || Object])
     ], HomePage);
     return HomePage;
+    var _a, _b;
 }());
 
 //# sourceMappingURL=home.js.map
@@ -221,23 +261,15 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-/**
- * Main entry game class
- * @export
- * @class Game
- * @extends {Phaser.Game}
- */
 var Game = (function (_super) {
     __extends(Game, _super);
     /**
      * Creates an instance of Game.
      * @memberof Game
      */
-    function Game() {
+    function Game(width, height) {
         // call parent constructor
-        return _super.call(this, 800, 600, __WEBPACK_IMPORTED_MODULE_2_phaser_ce__["CANVAS"], "game", null) || this;
-        // add some game states
-        // start with boot state
+        return _super.call(this, width, height, __WEBPACK_IMPORTED_MODULE_2_phaser_ce__["CANVAS"], "game", null) || this;
     }
     return Game;
 }(__WEBPACK_IMPORTED_MODULE_2_phaser_ce__["Game"]));
